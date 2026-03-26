@@ -1,0 +1,2280 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Гафаров Акбар — AI/ML Engineer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fira+Code:wght@300;400;500;600&family=Montserrat:wght@900&display=swap"
+        rel="stylesheet">
+
+    <!-- GSAP + ScrollTrigger + SplitText (via CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #0d0f14;
+            --bg2: rgba(18, 21, 28, 0.8);
+            --bg3: #181c26;
+            --border: #1e2535;
+            --border2: #2a3347;
+            --text: #c8d3e8;
+            --text-dim: #5a6a8a;
+            --text-mid: #8899bb;
+            --green: #4ec994;
+            --cyan: #56cfe1;
+            --blue: #7b9ef0;
+            --purple: #a78bfa;
+            --yellow: #f7c948;
+            --red: #f87171;
+            --orange: #fb923c;
+            --glow-g: 0 0 20px rgba(78, 201, 148, .18);
+            --glow-c: 0 0 20px rgba(86, 207, 225, .18);
+            --glow-b: 0 0 20px rgba(123, 158, 240, .18);
+        }
+
+        /* Lenis smooth scroll recommended CSS */
+        html.lenis {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── hide before JS runs ── */
+        .gsap-hidden {
+            opacity: 0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 2px;
+        }
+
+        /* ── SIDE LABELS ── */
+        .side-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 5.5rem;
+            color: rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            pointer-events: none;
+            z-index: -1;
+            white-space: nowrap;
+            line-height: 1;
+            transition: opacity 0.5s;
+        }
+
+        .panel-right .side-label {
+            left: 10%;
+            text-align: left;
+        }
+
+        .panel-inner:not(.panel-right) .side-label {
+            right: 10%;
+            text-align: right;
+        }
+
+        @media(max-width: 1000px) {
+            .side-label {
+                font-size: 3.5rem;
+                opacity: 0.03;
+                top: 15%;
+                transform: none;
+                right: 5% !important;
+                left: auto !important;
+            }
+        }
+
+        /* noise */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: .5;
+        }
+
+        /* scanlines */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, .07) 2px, rgba(0, 0, 0, .07) 4px);
+            pointer-events: none;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(13, 15, 20, .92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            color: var(--green);
+            font-weight: 700;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .nav-logo span {
+            color: var(--text-dim);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            transition: color .2s, background .2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--cyan);
+            background: rgba(86, 207, 225, .06);
+        }
+
+        .nav-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .4
+            }
+        }
+
+        /* ── LAYOUT ── */
+        /* ── SCROLL DRIVER ── */
+        #scroll-driver {
+            height: calc(310 * 12px + 100vh);
+            /* 310 virtual frames (210 real + 5×20 holds) */
+            position: relative;
+        }
+
+        /* ── FIXED PANELS (sections) ── */
+        .panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0;
+            /* NO CSS transition — GSAP owns this */
+        }
+
+        .panel.active {
+            pointer-events: auto;
+        }
+
+        /* GPU-accelerated children for shatter effect */
+        .panel-inner>* {
+            will-change: transform, opacity, filter;
+        }
+
+
+        .panel-inner {
+            max-width: 720px;
+            margin-left: 6rem;
+            margin-right: auto;
+            padding: 80px 2rem 80px;
+            width: 100%;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+
+        .panel-inner.panel-right {
+            margin-left: auto;
+            margin-right: 6rem;
+        }
+
+        /* ── FILE HEADER ── */
+        .file-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .file-header::before {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border));
+            order: 3;
+        }
+
+        .file-path {
+            color: var(--cyan);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .file-path span {
+            color: var(--text-dim);
+        }
+
+        .section-comment {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        /* ── HERO ── */
+        #hero {
+            min-height: calc(100vh - 52px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 0;
+        }
+
+        .terminal-window {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, .5), var(--glow-g);
+            backdrop-filter: blur(12px);
+        }
+
+        .terminal-bar {
+            background: var(--bg3);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+
+        .dot-r {
+            background: #ff5f57
+        }
+
+        .dot-y {
+            background: #ffbd2e
+        }
+
+        .dot-g {
+            background: #28ca41
+        }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .terminal-body {
+            padding: 28px 32px 36px;
+            overflow: hidden;
+        }
+
+        .prompt {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+
+        .prompt .user {
+            color: var(--green)
+        }
+
+        .prompt .dir {
+            color: var(--blue)
+        }
+
+        .prompt .sym {
+            color: var(--cyan)
+        }
+
+        /* ── SPLIT TEXT WORDS ── */
+        .split-word {
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: top;
+        }
+
+        .split-word-inner {
+            display: inline-block;
+            transform: translateY(110%);
+        }
+
+        /* whitespace between words */
+        .word-space {
+            display: inline-block;
+            width: .35em;
+        }
+
+        /* hero name */
+        .hero-name {
+            font-size: clamp(30px, 5vw, 46px);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #fff 0%, var(--cyan) 50%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ── TYPEWRITER ROLE ── */
+        .role-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            min-height: 28px;
+            font-size: 13px;
+        }
+
+        .role-prefix {
+            color: var(--green);
+        }
+
+        #typed-role {
+            color: var(--cyan);
+            font-weight: 500;
+        }
+
+        .typed-cursor-el {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: var(--cyan);
+            vertical-align: middle;
+            margin-left: 1px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        .hero-bio {
+            color: var(--text-mid);
+            max-width: 580px;
+            font-size: 13px;
+            line-height: 1.85;
+            margin-bottom: 28px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* char split for section titles */
+        .char-split {
+            display: inline-flex;
+            flex-wrap: wrap;
+        }
+
+        .char-el {
+            display: inline-block;
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 9px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: all .25s;
+            letter-spacing: .02em;
+        }
+
+        .btn-primary {
+            background: rgba(78, 201, 148, .12);
+            border: 1px solid rgba(78, 201, 148, .4);
+            color: var(--green);
+        }
+
+        .btn-primary:hover {
+            background: rgba(78, 201, 148, .2);
+            box-shadow: var(--glow-g);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(123, 158, 240, .08);
+            border: 1px solid rgba(123, 158, 240, .3);
+            color: var(--blue);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(123, 158, 240, .16);
+            box-shadow: var(--glow-b);
+            transform: translateY(-2px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border2);
+            color: var(--text-dim);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, .04);
+            transform: translateY(-2px);
+        }
+
+        /* ── STATS ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stat-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            transition: border-color .2s, box-shadow .2s, transform .2s;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--blue));
+            opacity: 0;
+            transition: opacity .3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border2);
+            box-shadow: var(--glow-c);
+            transform: translateY(-2px);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-num {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--cyan);
+            line-height: 1;
+            margin-bottom: 4px;
+            letter-spacing: -1px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-mid);
+            line-height: 1.5;
+        }
+
+        /* ── EXP ── */
+        .exp-item {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 22px 24px;
+            margin-bottom: 12px;
+            position: relative;
+            transition: border-color .2s, box-shadow .2s;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+        }
+
+        .exp-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+        }
+
+        .exp-green::before {
+            background: linear-gradient(180deg, var(--green), transparent);
+        }
+
+        .exp-blue::before {
+            background: linear-gradient(180deg, var(--blue), transparent);
+        }
+
+        .exp-item:hover {
+            border-color: var(--border2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .3);
+        }
+
+        .exp-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .exp-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e8edf8;
+        }
+
+        .exp-company {
+            font-size: 12px;
+            color: var(--cyan);
+            margin-top: 2px;
+        }
+
+        .exp-date {
+            font-size: 11px;
+            color: var(--text-dim);
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .exp-desc {
+            font-size: 12px;
+            color: var(--text-mid);
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .exp-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 14px;
+        }
+
+        .exp-list li {
+            font-size: 12px;
+            color: var(--text-mid);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .exp-list li::before {
+            content: '→';
+            color: var(--green);
+            flex-shrink: 0;
+        }
+
+        /* ── BADGES ── */
+        .stack-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(123, 158, 240, .08);
+            border: 1px solid rgba(123, 158, 240, .2);
+            color: var(--blue);
+            font-weight: 500;
+        }
+
+        .badge-g {
+            background: rgba(78, 201, 148, .08);
+            border-color: rgba(78, 201, 148, .2);
+            color: var(--green);
+        }
+
+        .badge-p {
+            background: rgba(167, 139, 250, .08);
+            border-color: rgba(167, 139, 250, .2);
+            color: var(--purple);
+        }
+
+        /* ── PROJECTS ── */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 14px;
+        }
+
+        .project-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 22px 24px;
+            transition: border-color .2s, transform .2s, box-shadow .2s;
+            backdrop-filter: blur(8px);
+        }
+
+        .project-card:hover {
+            border-color: var(--border2);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
+        }
+
+        .project-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .project-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e8edf8;
+            margin-bottom: 8px;
+        }
+
+        .project-desc {
+            font-size: 12px;
+            color: var(--text-mid);
+            line-height: 1.8;
+            margin-bottom: 14px;
+        }
+
+        .project-tasks {
+            list-style: none;
+            margin-bottom: 14px;
+        }
+
+        .project-tasks li {
+            font-size: 11px;
+            color: var(--text-mid);
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 3px;
+        }
+
+        .project-tasks li::before {
+            content: '─';
+            color: var(--text-dim);
+        }
+
+        /* ── SKILLS ── */
+        .skills-groups {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+        }
+
+        .skill-group {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        .skill-group-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--yellow);
+            margin-bottom: 12px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .skill-tag {
+            font-size: 11px;
+            padding: 3px 9px;
+            border-radius: 4px;
+            border: 1px solid var(--border2);
+            color: var(--text-mid);
+            background: var(--bg3);
+            transition: all .15s;
+        }
+
+        .skill-tag:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            background: rgba(86, 207, 225, .05);
+        }
+
+        /* ── ABOUT ── */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        @media(max-width:600px) {
+            .about-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .about-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 22px;
+            backdrop-filter: blur(8px);
+        }
+
+        .about-card h3 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--purple);
+            margin-bottom: 12px;
+            letter-spacing: .05em;
+        }
+
+        .lang-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .lang-name {
+            color: var(--text);
+        }
+
+        .lang-level {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid rgba(167, 139, 250, .3);
+            color: var(--purple);
+            background: rgba(167, 139, 250, .06);
+        }
+
+        .strengths-list {
+            list-style: none;
+        }
+
+        .strengths-list li {
+            font-size: 12px;
+            color: var(--text-mid);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .strengths-list li::before {
+            content: '✦';
+            color: var(--yellow);
+            font-size: 9px;
+            margin-top: 3px;
+        }
+
+        /* ── EDU ── */
+        .edu-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--purple);
+            border-radius: 8px;
+            padding: 22px 24px;
+            backdrop-filter: blur(8px);
+        }
+
+        .edu-name {
+            font-size: 14.25px;
+            font-weight: 600;
+            color: #e8edf8;
+            margin-bottom: 4px;
+        }
+
+        .edu-degree {
+            font-size: 12px;
+            color: var(--purple);
+            margin-bottom: 4px;
+        }
+
+        .edu-dates {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+
+        .diploma-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(247, 201, 72, .08);
+            border: 1px solid rgba(247, 201, 72, .3);
+            color: var(--yellow);
+        }
+
+        /* ── CERTS ── */
+        .certs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cert-item {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-mid);
+            transition: border-color .2s;
+            backdrop-filter: blur(8px);
+        }
+
+        .cert-item:hover {
+            border-color: var(--border2);
+        }
+
+        .cert-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        /* ── CONTACT ── */
+        .contact-box {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 32px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .contact-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e8edf8;
+            margin-bottom: 8px;
+        }
+
+        .contact-sub {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+
+        /* ── ROLE TAGS ── */
+        .hero-roles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .role-tag {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid;
+        }
+
+        .tag-green {
+            color: var(--green);
+            border-color: rgba(78, 201, 148, .3);
+            background: rgba(78, 201, 148, .06)
+        }
+
+        .tag-cyan {
+            color: var(--cyan);
+            border-color: rgba(86, 207, 225, .3);
+            background: rgba(86, 207, 225, .06)
+        }
+
+        .tag-blue {
+            color: var(--blue);
+            border-color: rgba(123, 158, 240, .3);
+            background: rgba(123, 158, 240, .06)
+        }
+
+        .tag-purple {
+            color: var(--purple);
+            border-color: rgba(167, 139, 250, .3);
+            background: rgba(167, 139, 250, .06)
+        }
+
+        .tag-yellow {
+            color: var(--yellow);
+            border-color: rgba(247, 201, 72, .3);
+            background: rgba(247, 201, 72, .06)
+        }
+
+        code {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: .9em;
+            color: var(--orange);
+            font-family: inherit;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border);
+            padding: 24px 2rem;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        footer span {
+            color: var(--green);
+        }
+
+        /* ── SCROLL REVEAL BASE ── */
+        /* .sr class was here, now removed as sections handle their own opacity fully */
+
+        @media(max-width:600px) {
+            .projects-grid {
+                grid-template-columns: 1fr
+            }
+
+            .nav-links {
+                display: none
+            }
+
+            .terminal-body {
+                padding: 20px
+            }
+
+            .hero-name {
+                font-size: 28px
+            }
+        }
+
+        /* ── GLITCH on hover for name ── */
+        .hero-name {
+            position: relative;
+        }
+
+        /* progress bar line at top */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            z-index: 200;
+            background: linear-gradient(90deg, var(--green), var(--cyan), var(--blue));
+            width: 0%;
+            transition: width .1s;
+        }
+
+        .cmd-cursor,
+        .typed-cursor-el {
+            display: inline-block;
+            color: var(--cyan);
+            font-weight: 300;
+            animation: blink-cur 0.75s step-end infinite;
+            margin-left: 1px;
+        }
+
+        @keyframes blink-cur {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0
+            }
+        }
+
+        /* Scramble words — each char is monospace so width stays stable */
+        .scramble-word {
+            display: inline-block;
+            min-width: 1ch;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Image Sequence Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            object-fit: cover;
+            pointer-events: none;
+            opacity: 1;
+            /* removed opacity effect */
+        }
+
+        #bg-overlay {
+            display: none;
+            /* removed overlay effect */
+        }
+    </style>
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+</head>
+
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+    <div id="bg-overlay"></div>
+    <div id="progress-bar"></div>
+
+    <!-- NAV -->
+    <nav id="navbar">
+        <a href="#hero" class="nav-logo">akbar<span>@portfolio</span></a>
+        <ul class="nav-links">
+            <li><a href="#hero">~/home</a></li>
+            <li><a href="#education">~/edu</a></li>
+            <li><a href="#experience">~/exp</a></li>
+            <li><a href="#projects">~/projects</a></li>
+            <li><a href="#skills">~/skills</a></li>
+            <li><a href="#about">~/about</a></li>
+            <li><a href="#contact">~/contact</a></li>
+        </ul>
+        <div class="nav-status">
+            <span class="status-dot"></span>
+            available for work
+        </div>
+    </nav>
+
+    <!-- SCROLL DRIVER: drives all 210 frames -->
+    <div id="scroll-driver"></div>
+
+    <!-- ALL SECTIONS as fixed panels -->
+
+    <!-- ─── HERO ─── -->
+    <div class="panel" id="panel-hero">
+        <div class="side-label" style="right: 5%;">Portfolio</div>
+        <div class="terminal-window" id="terminal-win">
+            <div class="terminal-bar">
+                <span class="dot dot-r"></span>
+                <span class="dot dot-y"></span>
+                <span class="dot dot-g"></span>
+                <span class="terminal-title">bash — ~/portfolio — 90×30</span>
+            </div>
+            <div class="terminal-body">
+                <!-- Prompt types itself -->
+                <div class="prompt" id="hero-prompt" style="visibility:hidden">
+                    <span class="user">akbar</span><span style="color:var(--text-dim)">@</span><span
+                        class="dir">portfolio</span><span style="color:var(--text-dim)">:~$ </span><span
+                        id="typed-cmd"></span><span class="cmd-cursor">▌</span>
+                </div>
+
+                <!-- Scramble name: each word is a separate colored span -->
+                <h1 class="hero-name" id="hero-name" style="opacity:0">
+                    <span class="scramble-word" data-text="Гафаров" style="color:#e8edf8"></span>
+                    <span class="word-sep"> </span>
+                    <span class="scramble-word" data-text="Акбар" style="color:var(--cyan)"></span>
+                    <br>
+                    <span class="scramble-word" data-text="Маруфович" style="color:var(--green)"></span>
+                </h1>
+
+                <!-- Roles typewriter -->
+                <div class="role-line" id="hero-roles-line" style="opacity:0">
+                    <span class="role-prefix">▸</span>
+                    <span id="typed-role"></span><span class="typed-cursor-el"></span>
+                </div>
+
+                <div id="hero-bio-wrap" style="opacity:0">
+                    <p class="hero-bio">
+                        Молодой разработчик с практическим опытом в области искусственного интеллекта, компьютерного
+                        зрения, Python-разработки и автоматизации процессов. Участвую в полном цикле создания
+                        IT-решений: от сбора и подготовки данных до обучения моделей и внедрения готовых систем.
+                    </p>
+                </div>
+
+                <div class="hero-btns" id="hero-btns" style="opacity:0">
+                    <a href="mailto:gafarovakbar@mail.ru" class="btn btn-primary">Связаться</a>
+                    <a href="https://github.com/SupremeGoogle/" target="_blank" class="btn btn-secondary">GitHub</a>
+                    <a href="#projects" class="btn btn-ghost">Портфолио</a>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.panel-inner -->
+    </div><!-- /#panel-hero -->
+
+    <!-- ─── EDUCATION ─── -->
+    <div class="panel" id="panel-education">
+        <div class="panel-inner panel-right">
+            <div class="side-label">Education</div>
+            <div id="education">
+                <div class="file-header">
+                    <span class="file-path sr"><span>./</span>education.json</span>
+                </div>
+                <div class="edu-card sr">
+                    <div class="edu-name">Балтийский федеральный университет имени Иммануила Канта</div>
+                    <div class="edu-degree">ОНК Высоких технологий · Информационные системы и технологии</div>
+                    <div class="edu-dates">2021 — 2025</div>
+                    <span class="diploma-badge">Красный диплом</span>
+                </div>
+                <br>
+                <div class="certs-list">
+                    <div class="cert-item sr">Диплом о профессиональной подготовке:
+                        специалист по искусственному интеллекту</div>
+                    <div class="cert-item sr">Сертифицированный педагог HISTES</div>
+                    <div class="cert-item sr">Сертификаты онлайн-курсов, включая Stepik
+                    </div>
+                    <div class="cert-item sr">Наставник первокурсников БФУ</div>
+                    <div class="cert-item sr">Победитель международной олимпиады по
+                        арифметике</div>
+                    <div class="cert-item sr">Свидетельство о регистрации разработанной
+                        системы</div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /#panel-education -->
+
+    <!-- ─── EXPERIENCE (KIBERone) ─── -->
+    <div class="panel" id="panel-kiberone">
+        <div class="panel-inner">
+            <div class="side-label" style="right: 5%;">Senior - Tutor<br>KIBERone</div>
+            <div id="experience">
+                <div class="file-header">
+                    <span class="file-path sr"><span>./</span>work_experience.md</span>
+                </div>
+                <div class="exp-item exp-blue sr">
+                    <div class="exp-top">
+                        <div>
+                            <div class="exp-title">Старший тьютор / Тьютор</div>
+                            <div class="exp-company">KIBERone</div>
+                        </div>
+                        <span class="exp-date">2021 — 2026</span>
+                    </div>
+                    <p class="exp-desc">Преподавал детям 6–14 лет программирование и цифровые технологии. Последние 2
+                        года
+                        совмещал преподавание с ролью старшего тьютора: руководил академическими процессами, курировал
+                        команду, адаптировал новых сотрудников.</p>
+                    <ul class="exp-list">
+                        <li>Обучил более 100 учеников</li>
+                        <li>Курировал около 35 тьюторов</li>
+                        <li>Разрабатывал учебные модули (4 собственных)</li>
+                        <li>Автоматизировал внутренние процессы команды</li>
+                    </ul>
+                    <div class="stack-badges">
+                        <span class="badge badge-g">Python</span><span class="badge">Telegram Bot API</span>
+                        <span class="badge badge-p">Unity</span><span class="badge badge-p">Blender</span><span
+                            class="badge">HTML/CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /#panel-kiberone -->
+
+    <!-- ─── EXPERIENCE (Baltic) ─── -->
+    <div class="panel" id="panel-baltic">
+        <div class="panel-inner">
+            <div class="side-label" style="top: 35%; right: 5%;">Baltic Center</div>
+            <div id="experience-baltic">
+                <div class="file-header"><span class="file-path"><span>./</span>baltic_center.md</span></div>
+                <div class="exp-item exp-green">
+                    <div class="exp-top">
+                        <div>
+                            <div class="exp-title">Разработчик (AI/ML)</div>
+                            <div class="exp-company no-scramble">Балтийский центр нейротехнологий и искусственного
+                                интеллекта</div>
+                        </div>
+                        <span class="exp-date">2024 — н.в.</span>
+                    </div>
+                    <p class="exp-desc">Разрабатываю интеллектуальные системы на базе AI, компьютерного зрения и анализа
+                        цифрового контента. Полный цикл AI-разработки: сбор данных → датасеты → разметка → обучение →
+                        тестирование → оценка.</p>
+                    <div class="stack-badges">
+                        <span class="badge badge-g">Python</span><span class="badge badge-g">PyTorch</span><span
+                            class="badge badge-g">YOLO</span>
+                        <span class="badge">PostgreSQL</span><span class="badge">SQL</span><span
+                            class="badge badge-p">RAG</span><span class="badge">Docker</span>
+                    </div>
+                </div>
+
+                <!-- ─── Проекты Балтийского центра ─── -->
+                <div class="projects-grid" style="margin-top:16px">
+                    <div class="project-card">
+                        <div class="project-name">Система распознавания наземной техники для БПЛА</div>
+                        <p class="project-desc">Система компьютерного зрения для автоматического обнаружения наземной
+                            техники по данным с беспилотников.</p>
+                        <ul class="project-tasks">
+                            <li>Сбор и разметка датасетов</li>
+                            <li>Обучение моделей компьютерного зрения</li>
+                            <li>Тестирование и оценка качества</li>
+                        </ul>
+                        <div class="stack-badges">
+                            <span class="badge badge-g">Python</span><span class="badge badge-g">PyTorch</span><span
+                                class="badge badge-g">YOLO</span><span class="badge">Computer Vision</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-name">Система мониторинга цифрового контента</div>
+                        <p class="project-desc">Интеллектуальная система выявления признаков продажи запрещённых веществ
+                            с применением RAG-подходов.</p>
+                        <ul class="project-tasks">
+                            <li>Подготовка и анализ данных</li>
+                            <li>Обучение AI-моделей вручную</li>
+                            <li>RAG-архитектура и работа с БД</li>
+                        </ul>
+                        <div class="stack-badges">
+                            <span class="badge badge-g">Python</span><span class="badge badge-p">RAG</span><span
+                                class="badge">PostgreSQL</span><span class="badge">Docker</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /#panel-baltic -->
+
+    <!-- ─── PROJECTS ─── -->
+    <div class="panel" id="panel-projects">
+        <div class="panel-inner panel-right">
+            <div class="side-label" style="left: 2%;">Projects</div>
+            <div id="projects">
+                <div class="file-header">
+                    <span class="file-path sr"><span>./</span>projects.ts</span>
+                </div>
+                <div class="projects-grid">
+                    <div class="project-card sr">
+                        <div class="project-name">Telegram-боты для автоматизации</div>
+                        <p class="project-desc">Серия из 10+ Telegram-ботов для реальных бизнес-задач: налоговый вычет,
+                            учёт
+                            медиафайлов, CRM-процессы, генерация сертификатов.</p>
+                        <ul class="project-tasks">
+                            <li>Генерация сертификатов автоматически</li>
+                            <li>Учёт фото и видео материалов</li>
+                            <li>CRM-автоматизация внутри компании</li>
+                            <li>Боты для налогового вычета</li>
+                        </ul>
+                        <div class="stack-badges">
+                            <span class="badge badge-g">Python</span><span class="badge">Telegram Bot API</span><span
+                                class="badge">SQL</span>
+                        </div>
+                    </div>
+                    <div class="project-card sr">
+                        <div class="project-name">Коммерческие digital-проекты</div>
+                        <p class="project-desc">15+ сайтов для бизнеса и сайт-агрегатор, собирающий данные
+                            дистрибьюторов города и публикующий их в единой системе.</p>
+                        <ul class="project-tasks">
+                            <li>15+ сайтов для различных бизнесов</li>
+                            <li>Проектирование и сопровождение веб-решений</li>
+                            <li>Парсинг и обработка данных</li>
+                            <li>Полный цикл разработки</li>
+                        </ul>
+                        <div class="stack-badges">
+                            <span class="badge">HTML</span><span class="badge">CSS</span><span
+                                class="badge badge-g">Python</span><span class="badge">SQL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /#panel-projects -->
+
+    <!-- ─── SKILLS ─── -->
+    <div class="panel" id="panel-skills">
+        <div class="panel-inner">
+            <div id="skills">
+                <div class="file-header">
+                    <span class="file-path sr"><span>./</span>skills.md</span>
+                </div>
+                <div class="skills-groups">
+                    <div class="skill-group sr">
+                        <div class="skill-group-title">Backend / Development</div>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Python</span><span class="skill-tag">C#</span><span
+                                class="skill-tag">HTML</span><span class="skill-tag">CSS</span><span
+                                class="skill-tag">SQL</span>
+                        </div>
+                    </div>
+                    <div class="skill-group sr">
+                        <div class="skill-group-title">AI / ML / Data</div>
+                        <div class="skill-tags">
+                            <span class="skill-tag">PyTorch</span><span class="skill-tag">YOLO</span><span
+                                class="skill-tag">RAG</span><span class="skill-tag">Computer Vision</span><span
+                                class="skill-tag">Data Analysis</span><span class="skill-tag">Dataset
+                                Labeling</span><span class="skill-tag">Neural Networks</span>
+                        </div>
+                    </div>
+                    <div class="skill-group sr">
+                        <div class="skill-group-title">DB & Infrastructure</div>
+                        <div class="skill-tags"><span class="skill-tag">PostgreSQL</span><span
+                                class="skill-tag">Docker</span></div>
+                    </div>
+                    <div class="skill-group sr">
+                        <div class="skill-group-title">Tools</div>
+                        <div class="skill-tags">
+                            <span class="skill-tag">PyCharm</span><span class="skill-tag">Cursor</span><span
+                                class="skill-tag">Blender</span><span class="skill-tag">Unity</span><span
+                                class="skill-tag">Photoshop</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /#panel-skills -->
+
+    <!-- ─── ABOUT + STATS + CONTACT ─── -->
+    <div class="panel" id="panel-about">
+        <div class="panel-inner">
+            <div class="side-label" style="right: 2%;">About me</div>
+            <div id="about">
+                <div class="file-header">
+                    <span class="file-path"><span>./</span>about_me.txt</span>
+                </div>
+                <div class="about-grid" style="margin-bottom:0">
+                    <div class="about-card">
+                        <h3>// ЯЗЫКИ</h3>
+                        <div class="lang-item"><span class="lang-name">Русский</span><span
+                                class="lang-level">Родной</span>
+                        </div>
+                        <div class="lang-item"><span class="lang-name">Английский</span><span
+                                class="lang-level">B2</span>
+                        </div>
+                        <div class="lang-item"><span class="lang-name">Таджикский</span><span
+                                class="lang-level">Разговорный</span></div>
+                        <div class="lang-item"><span class="lang-name">Узбекский</span><span
+                                class="lang-level">Разговорный</span></div>
+                        <div class="lang-item"><span class="lang-name">Казахский</span><span
+                                class="lang-level">Разговорный</span></div>
+                    </div>
+                    <div class="about-card">
+                        <h3>// СИЛЬНЫЕ СТОРОНЫ</h3>
+                        <ul class="strengths-list">
+                            <li>Быстро осваиваю новые технологии</li>
+                            <li>Легко адаптируюсь к новым задачам</li>
+                            <li>Совмещаю техническое и организационное</li>
+                            <li>Надёжен — довожу задачи до результата</li>
+                            <li>Не боюсь пробовать новые подходы</li>
+                            <li>Универсален: разработчик, автоматизатор, наставник</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- STATS inline -->
+                <div id="stats" style="margin-top:20px">
+                    <div class="file-header">
+                        <span class="file-path"><span>./</span>experience_in_numbers.json</span>
+                    </div>
+                    <p class="section-comment" style="margin-bottom:12px">// данные актуальны на 2025</p>
+                    <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);gap:8px">
+                        <div class="stat-card">
+                            <div class="stat-num count-up" data-target="4" data-suffix="+">0</div>
+                            <div class="stat-label">лет в IT,<br>обучении и автоматизации</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num count-up" data-target="2" data-suffix="+">0</div>
+                            <div class="stat-label">года коммерческой<br>AI-разработки</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num count-up" data-target="100" data-suffix="+">0</div>
+                            <div class="stat-label">учеников, обученных<br>программированию</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num count-up" data-target="35" data-suffix="+">0</div>
+                            <div class="stat-label">тьюторов,<br>которых курировал</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num count-up" data-target="15" data-suffix="+">0</div>
+                            <div class="stat-label">сайтов<br>для бизнеса</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num count-up" data-target="10" data-suffix="+">0</div>
+                            <div class="stat-label">Telegram-ботов<br>под реальные задачи</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num count-up" data-target="3" data-suffix="">0</div>
+                            <div class="stat-label">AI-модели,<br>обученные с нуля</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num count-up" data-target="4" data-suffix="">0</div>
+                            <div class="stat-label">учебных модуля,<br>разработанных лично</div>
+                        </div>
+                    </div>
+
+                    <!-- CONTACT inline -->
+                    <div id="contact" style="margin-top:32px">
+                        <div class="file-header">
+                            <span class="file-path sr"><span>./</span>contact.sh</span>
+                        </div>
+                        <div class="contact-box sr">
+                            <div class="contact-title">Свяжитесь со мной</div>
+                            <p class="contact-sub"><code>$ echo "Открыт к новым проектам и предложениям"</code></p>
+                            <div class="hero-btns" style="justify-content:center">
+                                <a href="mailto:gafarovakbar@mail.ru" class="btn btn-primary">Email</a>
+                                <a href="https://t.me/supremeHn" target="_blank" class="btn btn-secondary">Telegram</a>
+                                <a href="https://github.com/SupremeGoogle/" target="_blank"
+                                    class="btn btn-ghost">GitHub</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /#panel-about -->
+
+            <footer
+                style="position:fixed;bottom:0;left:0;right:0;z-index:20;background:rgba(13,15,20,0.85);backdrop-filter:blur(8px)">
+                <span>akbar</span>@portfolio — © 2025 Гафаров Акбар Маруфович
+            </footer>
+
+            <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+            <script>
+                // ══════════════════════════════════════════════
+                //  GSAP ANIMATION SUITE
+                // ══════════════════════════════════════════════
+                gsap.registerPlugin(ScrollTrigger);
+
+                // ══════════════════════════════════════════════
+                //  SCRAMBLE DECODE ENGINE  (Matrix / wennya style)
+                // ══════════════════════════════════════════════
+
+                // Characters pool: katakana + latin + symbols — exactly like the reference
+                const CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン' +
+                    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' +
+                    '0123456789!@#$%&*()[]{}|<>';
+
+                function randChar() {
+                    return CHARS[Math.floor(Math.random() * CHARS.length)];
+                }
+
+                /**
+                 * Scramble-decode a single DOM element.
+                 * @param {HTMLElement} el      - element to write into
+                 * @param {string}      target  - final text
+                 * @param {number}      delay   - ms before starting
+                 * @param {Function}    onDone  - callback when finished
+                 */
+                /**
+                 * Scramble-decode a single DOM element.
+                 * @param {HTMLElement} el      - element to write into
+                 * @param {string}      target  - final text
+                 * @param {number}      delay   - ms before starting
+                 * @param {Function}    onDone  - callback when finished
+                 */
+                function scrambleDecode(el, target, delay, onDone) {
+                    const LEN = target.length;
+                    const SCRAMBLE_T = 300;   // ms of pure scramble before decoding starts (reduced from 600)
+                    const CHAR_STEP = 55;    // ms between each char locking in
+                    const TICK = 40;    // ms per frame of scramble noise
+
+                    let frame = 0;
+                    let lockedCount = 0;
+                    let interval = null;
+                    let started = false;
+
+                    function render() {
+                        let out = '';
+                        for (let i = 0; i < LEN; i++) {
+                            if (i < lockedCount) {
+                                out += target[i];
+                            } else {
+                                out += target[i] === ' ' ? ' ' : randChar();
+                            }
+                        }
+                        el.textContent = out;
+                    }
+
+                    function startDecode() {
+                        // Lock one char every CHAR_STEP ms
+                        const lockInterval = setInterval(() => {
+                            lockedCount++;
+                            if (lockedCount >= LEN) {
+                                clearInterval(lockInterval);
+                                clearInterval(interval);
+                                el.textContent = target;   // guarantee final state
+                                onDone && onDone();
+                            }
+                        }, CHAR_STEP);
+                    }
+
+                    setTimeout(() => {
+                        el.style.opacity = '1';
+                        // Pure scramble phase
+                        interval = setInterval(() => {
+                            render();
+                            frame++;
+                            if (frame * TICK >= SCRAMBLE_T && !started) {
+                                started = true;
+                                startDecode();
+                            }
+                        }, TICK);
+                    }, delay);
+                }
+
+                // ── Step 0: Terminal window appears ───────────
+                gsap.fromTo("#terminal-win",
+                    { y: 30, opacity: 0, scale: 0.98 },
+                    {
+                        y: 0, opacity: 1, scale: 1, duration: 0.5, ease: "power3.out",
+                        onComplete: startSequence
+                    }
+                );
+
+                function startSequence() {
+                    // ── Step 1: Scramble-decode each word of the name IMMEDIATELY ──
+                    const nameEl = document.getElementById("hero-name");
+                    nameEl.style.opacity = "1";
+
+                    const words = document.querySelectorAll(".scramble-word");
+                    let pending = words.length;
+
+                    words.forEach((word, i) => {
+                        const text = word.dataset.text;
+                        const delay = i * 180;   // snappier stagger
+
+                        scrambleDecode(word, text, delay, () => {
+                            pending--;
+                            if (pending === 0) {
+                                // Fade in roles / bio / buttons after name is done
+                                gsap.to("#hero-roles-line", { opacity: 1, duration: 0.4, delay: 0.1, ease: "power2.out", onComplete: startRoles });
+                                gsap.to("#hero-bio-wrap", { opacity: 1, duration: 0.45, delay: 0.3, ease: "power2.out" });
+                                gsap.to("#hero-btns", { opacity: 1, duration: 0.45, delay: 0.5, ease: "power2.out" });
+                            }
+                        });
+                    });
+
+                    // ── Step 2: Type the command in parallel ──
+                    setTimeout(() => {
+                        const promptEl = document.getElementById("hero-prompt");
+                        promptEl.style.visibility = "visible";
+                        const cmdEl = document.getElementById("typed-cmd");
+
+                        typeText(cmdEl, "cat ./personal_info.txt", 40, () => {
+                            promptEl.querySelector(".cmd-cursor").style.display = "none";
+                        });
+                    }, 100);
+                }
+
+                // ── Utility: typeText ─────────────────────────
+                function typeText(el, text, speed, onDone) {
+                    let i = 0;
+                    el.textContent = '';
+                    function tick() {
+                        if (i < text.length) {
+                            el.textContent += text[i++];
+                            setTimeout(tick, speed + Math.random() * (speed * 0.4));
+                        } else { onDone && onDone(); }
+                    }
+                    tick();
+                }
+
+                // ── Scramble on hover for name words ─────────
+                document.querySelectorAll(".scramble-word").forEach(word => {
+                    let hoverActive = false;
+                    word.addEventListener("mouseenter", () => {
+                        if (hoverActive) return;
+                        hoverActive = true;
+                        const original = word.dataset.text;
+                        scrambleDecode(word, original, 0, () => { hoverActive = false; });
+                    });
+                });
+
+                // ── Typewriter for cycling roles ──────────────
+                const roles = [
+                    "AI/ML Engineer",
+                    "Computer Vision Engineer",
+                    "Python Developer",
+                    "Data Analyst",
+                    "Automation Specialist"
+                ];
+                let rIdx = 0, cIdx = 0, deleting = false;
+                const typedEl = document.getElementById("typed-role");
+
+                function typeLoop() {
+                    const current = roles[rIdx];
+                    if (!deleting) {
+                        typedEl.textContent = current.slice(0, cIdx + 1);
+                        cIdx++;
+                        if (cIdx === current.length) { deleting = true; setTimeout(typeLoop, 2000); return; }
+                        setTimeout(typeLoop, 65 + Math.random() * 30);
+                    } else {
+                        typedEl.textContent = current.slice(0, cIdx - 1);
+                        cIdx--;
+                        if (cIdx === 0) {
+                            deleting = false;
+                            rIdx = (rIdx + 1) % roles.length;
+                            setTimeout(typeLoop, 350); return;
+                        }
+                        setTimeout(typeLoop, 30);
+                    }
+                }
+
+                function startRoles() { setTimeout(typeLoop, 200); }
+
+                // ══════════════════════════════════════════════
+                //  SMOOTH SCROLL (LENIS)
+                // ══════════════════════════════════════════════
+                const lenis = new Lenis({
+                    duration: 2.5,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    smooth: true,
+                    mouseMultiplier: 0.8,
+                    smoothTouch: false,
+                });
+
+                function rafLenis(time) {
+                    lenis.raf(time);
+                    ScrollTrigger.update();
+                    requestAnimationFrame(rafLenis);
+                }
+                requestAnimationFrame(rafLenis);
+
+                // ══════════════════════════════════════════════
+                //  CANVAS: ALL 210 FRAMES driven by one scrub
+                // ══════════════════════════════════════════════
+                const canvas = document.getElementById("bg-canvas");
+                const ctx = canvas.getContext("2d");
+                const imgPath = "./ezgif-40fab6a928f61c63-jpg/ezgif-frame-";
+                const TOTAL_FRAMES = 210;
+                const images = new Array(TOTAL_FRAMES);
+                let loadedCount = 0;
+                let currentFrame = 1;
+
+                function renderCanvas(idx) {
+                    idx = Math.max(1, Math.min(TOTAL_FRAMES, Math.round(idx)));
+                    currentFrame = idx;
+                    const img = images[idx - 1];
+                    if (!img || !img.complete) return;
+
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+
+                    const r = Math.max(canvas.width / img.width, canvas.height / img.height);
+                    const w = img.width * r;
+                    const h = img.height * r;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+
+                    updatePanels(idx);
+                }
+
+                (function preload() {
+                    for (let i = 1; i <= TOTAL_FRAMES; i++) {
+                        const img = new Image();
+                        img.onload = () => {
+                            loadedCount++;
+                            if (i === 1) renderCanvas(1);
+                        };
+                        img.src = imgPath + i.toString().padStart(3, "0") + ".jpg";
+                        images[i - 1] = img;
+                    }
+                })();
+
+                window.addEventListener("resize", () => renderCanvas(currentFrame));
+
+                // ══════════════════════════════════════════════
+                //  HOLD-AWARE FRAME MAPPING
+                //  Scroll pauses at specific frames for holdFor
+                //  virtual frames before continuing.
+                // ══════════════════════════════════════════════
+                const HOLD_DEFS = [
+                    { atFrame: 38, holdFor: 20 },
+                    { atFrame: 80, holdFor: 20 },
+                    { atFrame: 101, holdFor: 20 },
+                    { atFrame: 132, holdFor: 20 },
+                    { atFrame: 171, holdFor: 20 },
+                ];
+
+                // Build piecewise segments: each segment maps
+                // [vStart, vEnd] virtual frames → [aStart, aEnd] actual frames
+                const scrollSegs = (function buildSegs() {
+                    const segs = [];
+                    let vCur = 1, aCur = 1;
+                    for (const h of HOLD_DEFS) {
+                        const aLen = h.atFrame - aCur;
+                        if (aLen > 0) {
+                            segs.push({ vS: vCur, vE: vCur + aLen, aS: aCur, aE: h.atFrame });
+                            vCur += aLen; aCur = h.atFrame;
+                        }
+                        // hold segment
+                        segs.push({ vS: vCur, vE: vCur + h.holdFor, aS: h.atFrame, aE: h.atFrame });
+                        vCur += h.holdFor;
+                    }
+                    // tail
+                    const tail = TOTAL_FRAMES - aCur;
+                    if (tail > 0) segs.push({ vS: vCur, vE: vCur + tail, aS: aCur, aE: TOTAL_FRAMES });
+                    return segs;
+                })();
+                const TOTAL_VIRTUAL = scrollSegs[scrollSegs.length - 1].vE; // == 310
+
+                function virtualToActual(vf) {
+                    for (const s of scrollSegs) {
+                        if (vf <= s.vE) {
+                            if (s.aS === s.aE) return s.aS; // hold
+                            const t = (vf - s.vS) / (s.vE - s.vS);
+                            return s.aS + t * (s.aE - s.aS);
+                        }
+                    }
+                    return TOTAL_FRAMES;
+                }
+
+                // Drive frames via scroll progress → virtual frame → actual frame
+                const frameProxy = { f: 1 };
+                gsap.to(frameProxy, {
+                    f: TOTAL_VIRTUAL,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: "#scroll-driver",
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: 1.2,
+                        onUpdate: () => {
+                            const actual = virtualToActual(frameProxy.f);
+                            renderCanvas(actual);
+                        },
+                    },
+                });
+                // Override renderCanvas calls so updatePanels gets actual frame too
+                // (renderCanvas already calls updatePanels internally via the onUpdate path)
+
+                // ══════════════════════════════════════════════
+                //  PANEL VISIBILITY: frame-based fade in/out
+                // ══════════════════════════════════════════════
+                //
+                //  Each panel:
+                //    frameIn   - frame when fade-IN starts
+                //    frameShow - frame when fully visible
+                //    frameHide - frame when fade-OUT starts
+                //    frameOut  - frame when panel is gone (gap begins)
+                //
+                const panelDefs = [
+                    { id: "panel-hero", frameIn: 1, frameShow: 4, frameHide: 14, frameOut: 20 },
+                    // gap 20→38 (~18 frames)
+                    { id: "panel-education", frameIn: 38, frameShow: 42, frameHide: 52, frameOut: 58 },
+                    // gap 58→70 (~12 frames)
+                    { id: "panel-kiberone", frameIn: 70, frameShow: 74, frameHide: 81, frameOut: 87 },
+                    // gap 87→96 (~9 frames)
+                    { id: "panel-baltic", frameIn: 96, frameShow: 100, frameHide: 112, frameOut: 118 },
+                    // gap 118→128 (~10 frames)
+                    { id: "panel-projects", frameIn: 128, frameShow: 132, frameHide: 136, frameOut: 140 },
+                    // gap 140→150 (~10 frames)
+                    { id: "panel-skills", frameIn: 150, frameShow: 154, frameHide: 184, frameOut: 191 },
+                    // gap 191→198 (~7 frames)
+                    { id: "panel-about", frameIn: 198, frameShow: 201, frameHide: 206, frameOut: 210 },
+                ];
+
+                const panelEls = {};
+                panelDefs.forEach(p => {
+                    panelEls[p.id] = document.getElementById(p.id);
+                });
+
+                // Prepare .panel-inner children for split animation
+                panelDefs.forEach(p => {
+                    const el = panelEls[p.id];
+                    if (!el) return;
+                    const inner = el.querySelector(".panel-inner");
+                    if (!inner) return;
+                    // Tag children for split effect
+                    [...inner.children].forEach((child, i) => {
+                        child.dataset.splitIdx = i;
+                    });
+                });
+
+                function easeInOut(t) {
+                    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+                }
+
+                // State machine per panel: "hidden" | "entering" | "visible" | "leaving"
+                const panelState = {};
+                panelDefs.forEach(p => { panelState[p.id] = "hidden"; });
+
+                // ── Scramble all .file-path elements inside a panel ──
+                function scrambleFilePaths(panelEl) {
+                    panelEl.querySelectorAll(".file-path").forEach((fp, fi) => {
+                        // Gather all leaf nodes: spans + direct text
+                        const targets = [];
+                        fp.childNodes.forEach(node => {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                // It's a span — store original text in data-text if not already
+                                if (!node.dataset.text) node.dataset.text = node.textContent;
+                                targets.push({ el: node, text: node.dataset.text });
+                            } else if (node.nodeType === Node.TEXT_NODE) {
+                                const t = node.textContent;
+                                if (!t.trim()) return;
+                                // Wrap bare text node in a span so we can animate it
+                                const span = document.createElement("span");
+                                if (!span.dataset) span.dataset = {};
+                                span.dataset.text = t;
+                                span.textContent = t;
+                                fp.replaceChild(span, node);
+                                targets.push({ el: span, text: t });
+                            }
+                        });
+                        targets.forEach((item, si) => {
+                            scrambleDecode(item.el, item.text, fi * 100 + si * 140, null);
+                        });
+                    });
+                }
+
+                // ── Scramble card titles inside a panel ──
+                function scrambleCardTitles(panelEl) {
+                    // Education panel: only scramble the university name and degree
+                    const isEdu = panelEl.id === "panel-education";
+                    const selectors = isEdu
+                        ? ['.edu-name', '.edu-degree']
+                        : ['.exp-title', '.exp-company', '.project-name', '.contact-title'];
+
+                    const SCRAMBLE_T_EDU = 180;  // faster scramble phase for education
+                    const CHAR_STEP_EDU = 35;
+
+                    let delay = isEdu ? 50 : 200;
+                    selectors.forEach(sel => {
+                        panelEl.querySelectorAll(sel).forEach(el => {
+                            if (el.classList.contains('no-scramble')) return;
+                            const original = el.dataset.origText || el.textContent.trim();
+                            if (!el.dataset.origText) el.dataset.origText = original;
+                            el.textContent = '';
+                            if (isEdu) {
+                                // Custom faster scramble for education block
+                                const LEN = original.length;
+                                let lockedCount = 0;
+                                let frame = 0;
+                                let started = false;
+                                const TICK = 30;
+                                setTimeout(() => {
+                                    el.style.opacity = '1';
+                                    const interval = setInterval(() => {
+                                        let out = '';
+                                        for (let i = 0; i < LEN; i++) {
+                                            out += i < lockedCount ? original[i] : (original[i] === ' ' ? ' ' : CHARS[Math.floor(Math.random() * CHARS.length)]);
+                                        }
+                                        el.textContent = out;
+                                        frame++;
+                                        if (frame * TICK >= SCRAMBLE_T_EDU && !started) {
+                                            started = true;
+                                            const lockInt = setInterval(() => {
+                                                lockedCount++;
+                                                if (lockedCount >= LEN) {
+                                                    clearInterval(lockInt);
+                                                    clearInterval(interval);
+                                                    el.textContent = original;
+                                                }
+                                            }, CHAR_STEP_EDU);
+                                        }
+                                    }, TICK);
+                                }, delay);
+                            } else {
+                                scrambleDecode(el, original, delay, null);
+                            }
+                            delay += isEdu ? 80 : 120;
+                        });
+                    });
+                }
+
+                function shatterIn(panelEl) {
+                    const inner = panelEl.querySelector(".panel-inner");
+                    if (!inner) return;
+                    const children = [...inner.children];
+                    if (children.length === 0) return;
+
+                    gsap.killTweensOf(children);
+
+                    // Education panel: faster animation
+                    const isEdu = panelEl.id === "panel-education";
+                    const dur = isEdu ? 0.35 : 0.6;
+                    const bodyDur = isEdu ? 0.38 : 0.65;
+                    const stagger = isEdu ? 0.05 : 0.08;
+                    const startDelay = isEdu ? 0.06 : 0.1;
+
+                    // Determine slide direction based on panel alignment
+                    const isRight = inner.classList.contains("panel-right");
+                    const slideX = isRight ? -80 : 80;
+
+                    // First child = file-header → drops from TOP
+                    const header = children[0];
+                    gsap.fromTo(header,
+                        { opacity: 0, y: -40, scale: 0.95, filter: "blur(3px)" },
+                        {
+                            opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: dur, ease: "power3.out",
+                            onComplete: () => scrambleFilePaths(panelEl)
+                        }
+                    );
+
+                    // Remaining children slide in from opposite side, staggered
+                    const body = children.slice(1);
+                    body.forEach((child, i) => {
+                        const isLast = i === body.length - 1;
+                        gsap.fromTo(child,
+                            { opacity: 0, x: slideX + (isRight ? -i * 15 : i * 15), y: 8, filter: "blur(3px)" },
+                            {
+                                opacity: 1, x: 0, y: 0, filter: "blur(0px)", duration: bodyDur,
+                                delay: startDelay + i * stagger, ease: "power3.out",
+                                onComplete: isLast ? () => scrambleCardTitles(panelEl) : undefined
+                            }
+                        );
+                    });
+                    if (body.length === 0) setTimeout(() => scrambleCardTitles(panelEl), 250);
+                }
+
+                function shatterOut(panelEl, direction /* 1=forward, -1=back */) {
+                    const inner = panelEl.querySelector(".panel-inner");
+                    if (!inner) return;
+                    const children = [...inner.children];
+                    if (children.length === 0) return;
+
+                    gsap.killTweensOf(children);
+
+                    const isRight = inner.classList.contains("panel-right");
+                    const scatterMult = isRight ? 1 : -1;
+
+                    // Header flies UP (forward) or DOWN (back)
+                    const header = children[0];
+                    gsap.to(header, {
+                        opacity: 0,
+                        y: direction * -70,
+                        scale: 0.92,
+                        filter: "blur(5px)",
+                        duration: 0.4,
+                        ease: "power2.in"
+                    });
+
+                    // Content cards scatter toward their entry side
+                    const body = children.slice(1);
+                    body.forEach((child, i) => {
+                        gsap.to(child, {
+                            opacity: 0,
+                            x: scatterMult * direction * (40 + i * 15),
+                            y: direction * 40,
+                            filter: "blur(6px)",
+                            duration: 0.38,
+                            delay: i * 0.045,
+                            ease: "power2.in"
+                        });
+                    });
+
+                    // Reset card titles so scramble runs fresh on next entry
+                    const titleSels = ['.exp-title', '.exp-company', '.project-name', '.edu-name', '.edu-degree', '.contact-title'];
+                    titleSels.forEach(sel => {
+                        panelEl.querySelectorAll(sel).forEach(el => {
+                            if (el.dataset.origText && !el.classList.contains('no-scramble')) el.textContent = '';
+                        });
+                    });
+                    // Reset file-path spans so scramble runs fresh on next entry
+                    panelEl.querySelectorAll('.file-path span[data-text]').forEach(span => {
+                        span.textContent = span.dataset.text;
+                    });
+                }
+
+
+                function updatePanels(frame) {
+                    panelDefs.forEach(p => {
+                        const el = panelEls[p.id];
+                        if (!el) return;
+                        const state = panelState[p.id];
+                        const isInRange = frame >= p.frameIn && frame <= p.frameOut;
+                        const isPast = frame > p.frameOut;
+
+                        // Panel should be visible
+                        if (isInRange) {
+                            el.style.opacity = 1;
+                            el.classList.add("active");
+                            el.style.transform = "translateY(0)"; // container itself doesn't move, GSAP handles children
+                            if (state === "hidden") {
+                                panelState[p.id] = "visible";
+                                shatterIn(el);
+                                if (p.id === "panel-about") runCounters();
+                            }
+                        } else {
+                            el.classList.remove("active");
+                            if (state === "visible") {
+                                // Trigger shatter-out
+                                panelState[p.id] = "leaving";
+                                const dir = isPast ? 1 : -1;
+                                shatterOut(el, dir);
+                                // Actually fade the whole panel after children scatter
+                                gsap.to(el, {
+                                    opacity: 0, duration: 0.5, delay: 0.25, ease: "power2.in",
+                                    onComplete: () => { panelState[p.id] = "hidden"; }
+                                });
+                            } else if (state === "hidden") {
+                                el.style.opacity = 0;
+                            }
+                            // if "leaving" — let the ongoing animation finish
+                        }
+                    });
+                    updateNav(frame);
+                }
+
+                // ── Active Nav State ──
+                function updateNav(frame) {
+                    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+                    let current = null;
+                    for (const p of panelDefs) {
+                        if (frame >= p.frameIn) current = p.id;
+                    }
+                    if (!current) return;
+                    const idMap = {
+                        "panel-hero": "#hero",
+                        "panel-education": "#education",
+                        "panel-kiberone": "#experience",
+                        "panel-baltic": "#experience",
+                        "panel-projects": "#projects",
+                        "panel-skills": "#skills",
+                        "panel-about": "#about"
+                    };
+                    const navActive = idMap[current];
+                    const activeLink = document.querySelector(`.nav-links a[href="${navActive}"]`);
+                    if (activeLink) activeLink.classList.add('active');
+                }
+
+                const NAV_MAP = {
+                    "#hero": 1,
+                    "#education": 38,
+                    "#experience": 70,
+                    "#projects": 128,
+                    "#skills": 150,
+                    "#about": 198,
+                    "#contact": 208
+                };
+
+                function actualToVirtual(af) {
+                    for (const s of scrollSegs) {
+                        if (af >= s.aS && af <= s.aE) {
+                            if (s.aS === s.aE) return s.vS; // it's a hold frame
+                            const t = (af - s.aS) / (s.aE - s.aS);
+                            return s.vS + t * (s.vE - s.vS);
+                        }
+                    }
+                    return 1;
+                }
+
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', e => {
+                        const targetId = anchor.getAttribute('href');
+                        if (NAV_MAP[targetId]) {
+                            e.preventDefault();
+                            const vf = actualToVirtual(NAV_MAP[targetId]);
+                            const targetY = (vf - 1) * 12; // maps to scroll-driver's pixels (TOTAL_VIRTUAL * 12)
+                            lenis.scrollTo(targetY, { duration: 1.8, easing: (t) => 1 - Math.pow(1 - t, 4) });
+                        }
+                    });
+                });
+
+                // initialise panels
+                updatePanels(1);
+
+
+                // ══════════════════════════════════════════════
+                //  PROGRESS BAR
+                // ══════════════════════════════════════════════
+                const bar = document.getElementById("progress-bar");
+                window.addEventListener("scroll", () => {
+                    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+                    bar.style.width = pct + "%";
+                });
+
+                // ══════════════════════════════════════════════
+                //  COUNTER ANIMATION for stat numbers
+                // ══════════════════════════════════════════════
+                let countersDone = false;
+                function runCounters() {
+                    if (countersDone) return;
+                    countersDone = true;
+                    document.querySelectorAll(".count-up").forEach(el => {
+                        const target = +el.dataset.target;
+                        const suffix = el.dataset.suffix !== undefined ? el.dataset.suffix : "+";
+                        gsap.to({ val: 0 }, {
+                            val: target, duration: 1.6, ease: "power2.out",
+                            onUpdate: function () {
+                                el.textContent = Math.round(this.targets()[0].val) + suffix;
+                            }
+                        });
+                    });
+                }
+
+                // run counters when about panel is visible — handled in updatePanels above
+
+                // ══════════════════════════════════════════════
+                //  MAGNETIC BUTTONS
+                // ══════════════════════════════════════════════
+                document.querySelectorAll(".btn").forEach(btn => {
+                    btn.addEventListener("mousemove", e => {
+                        const r = btn.getBoundingClientRect();
+                        gsap.to(btn, { x: (e.clientX - r.left - r.width / 2) * 0.18, y: (e.clientY - r.top - r.height / 2) * 0.18, duration: 0.3 });
+                    });
+                    btn.addEventListener("mouseleave", () => gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1,0.4)" }));
+                });
+
+                // ══════════════════════════════════════════════
+                //  CARD TILT
+                // ══════════════════════════════════════════════
+                document.querySelectorAll(".project-card, .stat-card, .skill-group").forEach(card => {
+                    card.addEventListener("mousemove", e => {
+                        const r = card.getBoundingClientRect();
+                        const x = (e.clientX - r.left) / r.width - 0.5;
+                        const y = (e.clientY - r.top) / r.height - 0.5;
+                        gsap.to(card, { rotateX: -y * 4, rotateY: x * 4, duration: 0.3, transformPerspective: 800 });
+                    });
+                    card.addEventListener("mouseleave", () => gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.5 }));
+                });
+
+                // ══════════════════════════════════════════════
+                //  CURSOR
+                // ══════════════════════════════════════════════
+                const cursor = document.createElement("div");
+                cursor.style.cssText = "position:fixed;width:16px;height:16px;border:1.5px solid rgba(86,207,225,0.6);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .15s,opacity .2s;mix-blend-mode:difference;";
+                const cursorDot = document.createElement("div");
+                cursorDot.style.cssText = "position:fixed;width:4px;height:4px;background:var(--cyan,#56cfe1);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);";
+                document.body.appendChild(cursor);
+                document.body.appendChild(cursorDot);
+
+                let mx = 0, my = 0, cx = 0, cy = 0;
+                document.addEventListener("mousemove", e => { mx = e.clientX; my = e.clientY; });
+                (function animCursor() {
+                    cx += (mx - cx) * 0.12;
+                    cy += (my - cy) * 0.12;
+                    cursor.style.left = (cx - 8) + "px";
+                    cursor.style.top = (cy - 8) + "px";
+                    cursorDot.style.left = mx + "px";
+                    cursorDot.style.top = my + "px";
+                    requestAnimationFrame(animCursor);
+                })();
+                document.querySelectorAll("a, button, .btn, .skill-tag").forEach(el => {
+                    el.addEventListener("mouseenter", () => { cursor.style.transform = "scale(2.2)"; cursor.style.borderColor = "rgba(78,201,148,0.8)"; });
+                    el.addEventListener("mouseleave", () => { cursor.style.transform = "scale(1)"; cursor.style.borderColor = "rgba(86,207,225,0.6)"; });
+                });
+
+                // ══════════════════════════════════════════════
+                //  SKILL TAG stagger on hover
+                // ══════════════════════════════════════════════
+                document.querySelectorAll(".skill-group").forEach(group => {
+                    const tags = group.querySelectorAll(".skill-tag");
+                    group.addEventListener("mouseenter", () => {
+                        gsap.fromTo(tags, { scale: 0.92, opacity: 0.5 }, { scale: 1, opacity: 1, stagger: 0.04, duration: 0.25, ease: "back.out(2)" });
+                    });
+                });
+
+
+            </script>
+</body>
+
+</html>
